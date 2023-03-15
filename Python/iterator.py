@@ -1,34 +1,37 @@
-# iterator 
-
-
-__iter__
-my_iterator = iter(my_list)
-
-
-__next__
-next(my_iterator))
-
-
-
-# generator
-generator_1 = (x*x for x in range(3))
-generator_1
-
-def func(n):
-    for x in range(n):
-        yield x*x
+# 341. Flatten Nested List Iterator
+class NestedIterator:
+    def __init__(self, nestedList: [NestedInteger]):
         
-generator_2 = func(3)
-generator_2
+    
+    def next(self) -> int:
+        
+    
+    def hasNext(self) -> bool:
+        
+        
+        
+        
+iterator = NestedIterator(nestedList)
+res = []
+while iterator.hasNext(): 
+    res.append(iterator.next())
+    
+   
 
-next(generator_2)
+# 173. Binary Search Tree Iterator
+class BSTIterator:
+
+    def __init__(self, root: TreeNode):
+        
+
+    def next(self) -> int:
+        
+
+    def hasNext(self) -> bool:
+
+        
 
 
-
-
-
-
-# hasNext() and next()
 
 
 
