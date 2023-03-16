@@ -40,6 +40,3 @@ class CreditCard(PaymentMethod):
     
     def make_payment(self, amount):
         print(f"Processing credit card payment for ${amount}")
-
-
-
