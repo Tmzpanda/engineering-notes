@@ -30,7 +30,8 @@ class Clothing extends Product {
         this.size = size;
         this.color = color;
     }
-
+    
+    @Override
     public double getDiscountedPrice() {
         if (size.equals("S")) {
             return getPrice() * 0.9;
