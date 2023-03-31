@@ -1,4 +1,3 @@
-
 import pandas as pd
 
 # Read the CSV file into a DataFrame
