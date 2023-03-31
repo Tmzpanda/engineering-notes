@@ -1,3 +1,21 @@
+# Read the CSV file into a PySpark DataFrame
+df = spark.read.csv('filename.csv', header=True, inferSchema=True)
+
+# Trim the spaces from the column names
+df = df.toDF(*[c.strip() for c in df.columns])
+
+# Trim the spaces from the column values
+df = df.select([trim(c).alias(c) if c.dtype == 'string' else c for c in df.columns])
+
+# Find the highest salary for each department
+highest_salaries = df.groupBy('department').agg(max('salary').alias('highest_salary'))
+
+# Show the results
+highest_salaries.show()
+
+
+
+
 from pyspark import SparkConf
 from pyspark.sql import SparkSession
 
