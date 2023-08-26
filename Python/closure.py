@@ -3,7 +3,7 @@ def preorderTraversal(root: TreeNode) -> List[int]:
     def dfs(node):
         if node is None:
             return
-        res.append(node.val)
+        res.append(node.val)    # closure
         dfs(node.left)
         dfs(node.right)
 
