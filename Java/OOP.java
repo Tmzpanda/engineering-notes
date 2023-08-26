@@ -19,7 +19,6 @@ abstract class Product {
     public abstract double getDiscountedPrice();
 }
 
-
 // inheritance
 class Clothing extends Product {
     private String size;
@@ -41,11 +40,11 @@ class Clothing extends Product {
     }
 }
 
+
 // interface
 interface PaymentMethod {
     void makePayment(double amount);
 }
-
 
 // implementation
 class CreditCard implements PaymentMethod {
