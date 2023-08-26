@@ -10,7 +10,6 @@ class Product(ABC):
     def get_discounted_price(self):
         pass
 
-      
 # inheritance 
 class Clothing(Product):
     def __init__(self, name, price, size, color):
@@ -31,7 +30,6 @@ class PaymentMethod(ABC):
     def make_payment(self, amount):
         pass
 
-      
 # implementation
 class CreditCard(PaymentMethod):
     def __init__(self, card_number, expiry_date):
@@ -40,3 +38,4 @@ class CreditCard(PaymentMethod):
     
     def make_payment(self, amount):
         print(f"Processing credit card payment for ${amount}")
+
