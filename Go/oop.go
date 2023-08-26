@@ -4,7 +4,6 @@ type Product struct {
     price float64
 }
 
-
 // inheritance
 type Clothing struct {
     *Product
@@ -24,7 +23,6 @@ func (c *Clothing) getDiscountedPrice() float64 {
 type PaymentMethod interface {
     makePayment(amount float64)
 }
-
 
 // implementation
 type CreditCard struct {
