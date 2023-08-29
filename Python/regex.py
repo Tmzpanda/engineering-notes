@@ -59,5 +59,18 @@ def is_vfr_compliant(visibility, cloud_ceiling):
     return False
 
 
+# pandas
+with open('/home/coderpad/data/metars.csv', 'r') as csvfile:
+    csv_reader = csv.reader(csvfile)  # iterator
+    for row in csv_reader:
+        data.append([row])
+        
+df = pd.DataFrame(data, columns=['raw'])
+df['visibility'] = df['raw'].str.extract(r'(\d{4})|\d+SM\b')
+df['cloud_ceiling'] = df['raw'].str.extract(r'\b(CLR|FEW|SCT|BKN|OVC)(\d+)?\b')
+df['vfr_compliant'] = df.apply(lambda row: is_vfr_compliant(row['visibility'], row['cloud_ceiling']), axis=1)        
 
+vfr_airports_count = df['vfr_compliant'].sum()
+
+print("Number of VFR-compliant airports:", vfr_airports_count)
 
