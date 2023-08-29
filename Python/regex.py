@@ -22,15 +22,15 @@ import re
 vfr_airports_count = 0
 
 with open('/home/coderpad/data/metars.csv', 'r') as csvfile:
-    csv_reader = csv.reader(csvfile) # iterator
+    csv_reader = csv.reader(csvfile)  # iterator
 
     for row in csv_reader:    
         # "KSMO 220651Z AUTO 19006KT 10SM OVC010 17/14 A2997 RMK AO2 SLP146 T01720144"
-        visibility_match = re.search(r'(\b\d{4})\b|\b\d+SM\b', row) # Match object
-        cloud_ceiling_match = re.search(r'\b(CLR|FEW|SCT|BKN|OVC)(\d+)?\b', row)  # search
+        visibility_match = re.search(r'(\b\d{4})\b|\b\d+SM\b', row)  # search
+        cloud_ceiling_match = re.search(r'\b(CLR|FEW|SCT|BKN|OVC)(\d+)?\b', row)  
         
         if visibility_match and cloud_ceiling_match:
-            visibility = visibility_match.group()
+            visibility = visibility_match.group()  # Match object
             cloud_ceiling = cloud_ceiling_match.group()
             
             if is_vfr_compliant(visibility, cloud_ceiling):
@@ -47,7 +47,7 @@ def is_vfr_compliant(visibility, cloud_ceiling):
         if visibility_km >= 8000:
             return True
         
-    cloud_ceiling_match = re.match(r'(\w+)(\d+)?', cloud_ceiling) # match
+    cloud_ceiling_match = re.match(r'(\w+)(\d+)?', cloud_ceiling)  # match
     cloud_cover = cloud_ceiling_match.group(1)    
     cloud_height = cloud_ceiling_match.group(2)
     if cloud_cover in ['CLR', 'FEW', 'SCT']:
