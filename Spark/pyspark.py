@@ -1,3 +1,54 @@
+# SparkSession
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder \
+    .master("local[1]") \
+    .appName("spark demo") \
+    .getOrCreate() 
+
+
+# create spark df
+data = [["James","Smith",30,"M"], 
+        ["Michael","Rose",50,"M"], 
+        ["Robert","Williams",42,""], 
+        ["Maria","Jones",38,"F"], 
+        ["Jen","Brown",45,None]
+       ] 
+columns = ['First Name','Last Name','Age','Gender']
+df = spark.createDataFrame(data=data, schema=columns)
+
+
+# read from csv
+df = spark.read.csv("/tmp/resources/zipcodes.csv")
+
+
+# explore
+df.printSchema()
+df.select('col').show(5)
+df.drop('col)
+
+
+# clean
+df.filter(df.age > 40)
+df = df.withColumn("age_square", col("age")**2)
+df.filter(df.native_country != 'Holand-Netherlands')
+
+
+
+# aggregate
+df.filter(df.native_country == 'Holand-Netherlands').count()
+df.groupBy("education").count().sort("count",ascending=True).show()
+df.groupby('marital').agg({'capital_gain': 'mean'}).show()
+df.groupby('native_country').agg({'native_country': 'count'}).sort(asc("count(native_country)")).show()
+
+
+
+# feature engineer
+# onehotencoder
+
+
+
+
 #e.g. Spark transforms the unstructured logs, applies schema and insert into target table, 
 # transformations includes cleansing (e.g. deduplicate, rename, cast, json explode, filter), enrichment (join, aggregations), etc.
 
@@ -20,16 +71,6 @@ highest_salaries.show()
 
 
 
-from pyspark import SparkConf
-from pyspark.sql import SparkSession
-
-spark_conf = SparkConf() \
-    .setAppName("pyspark-basics") \
-    .setMaster("local[*]") \
-
-spark_session = SparkSession.builder \
-    .config(conf=spark_conf) \
-    .getOrCreate()
 
 
 
