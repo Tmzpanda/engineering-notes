@@ -1,13 +1,14 @@
-# SparkSession
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, explode, from_json, concat_ws, lit
 from pyspark.sql.types import StructType, StructField, StringType
 
+# SparkSession
 spark = SparkSession.builder \
     .master("local[1]") \
     .appName("spark demo") \
     .getOrCreate() 
 
+# **************************** Create ************************************************* #
 # create spark df
 data = [["James","Smith",30,"M"], 
         ["Michael","Rose",50,"M"], 
@@ -29,7 +30,7 @@ df.drop('col)
 df['survey_categoty'].distinct
 df.select('survey_type', 'survey_category').distinct().show(100, False)
 
-# clean
+# **************************** Clean ************************************************* #
 # Trim the spaces from the column names
 df = df.toDF(*[c.strip() for c in df.columns])
 
@@ -39,6 +40,7 @@ df = df.select([trim(c).alias(c) if c.dtype == 'string' else c for c in df.colum
 # deduplicate
 df = df.dropDuplicates(["col1", "col2"])
 
+# **************************** Transform ************************************************* #
 # transform
 df_transformed = df.select(col("id"),
                            concat_ws(' ', col("first_name"), col("second_name")).alias("name"),
@@ -70,7 +72,7 @@ df.filter("survey_di = 'bcbssc").groupBy('survey_id').count.show(10,false)
 # regex
 df = df.filter(expr("column_name LIKE 'pattern%'"))
 
-
+# **************************** Aggregate ************************************************* #
 
 # join
 df = df.join(df_dim, on="common_column", how="inner")
@@ -87,7 +89,7 @@ highest_salaries = df.groupBy('department').agg(max('salary').alias('highest_sal
 highest_salaries.show()
 
 
-# load 
+# **************************** Load ************************************************* #
 
 df_transformed\
     .write\
