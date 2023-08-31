@@ -1,3 +1,7 @@
+#e.g. Spark transforms the unstructured logs, applies schema and insert into target table, 
+# transformations includes cleansing (e.g. deduplicate, rename, cast, json explode, filter), enrichment (join, aggregations), etc.
+
+
 # Read the CSV file into a PySpark DataFrame
 df = spark.read.csv('filename.csv', header=True, inferSchema=True)
 
