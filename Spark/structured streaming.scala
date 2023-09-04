@@ -1,9 +1,15 @@
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.functions._
+import org.apache.spark.sql.streaming.Trigger
+
 // Spark Structured Streaming reads from Kafka
 val spark = SparkSession
   .builder()
   .master("local[*]")
   .config("spark.sql.streaming.checkpointLocation", "path/to/checkpoint/dir")  // checkpoint
   .getOrCreate()
+
+import spark.implicits._
 
 val stream = spark.readStream
   .format("kafka")
@@ -17,28 +23,56 @@ val processed = stream
   .withColumn("usage", col("parts").getItem(0).cast(DoubleType))
   .withColumn("timestamp", col("parts").getItem(1).cast(TimestampType))
   .drop("parts")
-  .withWatermark(eventTime="timestamp", delayThreshold="10 minutes") 
+  .withWatermark(eventTime="timestamp", delayThreshold="1 minutes") // watermark
   .groupBy("timestamp")
   .sum(usage)
 
-stream
-  .withWatermark("timestamp", "10 minutes")  // if trigger at 12:10, watermark = 12:10-10mins = 12:00，then late data (11:04, donkey) will be discarded
-  .groupBy(
-    window("timestamp", "10 minutes", "5 minutes"),  // sliding window 10mins, triggered every 5mins
-    "zip")
-  .count
-
 processed.writeStream
   .format("csv")
-  .outputMode("append")  
-  .start(path="output")
-  .awaitTermination
+  .start(path="output")  // file-based sink
+  .awaitTermination()
+
+// windowing
+stream
+  .withWatermark("timestamp", "10 minutes")  
+  .groupBy(
+    window(timeColumn=$"timestamp", windowDuration="5 minutes", slideDuration="1 minutes"),  // window of 10mins, triggered every 5mins
+    $"zip"
+  )
+  .count
+
+// trigger
+processed.writeStream
+  .format("console")
+  .outputMode("update")  // output mode
+  .trigger(Trigger.ProcessingTime("1 minute"))  // trigger
+  .start()
+  .awaitTermination()
 
 // batch
 df.write   
   .format("csv")
   .save(path="output")
 
-// ForeachWriter
+// custom ForeachWriter
+class HBaseForeachWriter extends ForeachWriter[Row] {        // ForeachWriter
+  override def open(partitionId: Long, epochId: Long): Boolean = {
+    
+  }
 
+  override def process(value: Row): Unit = {
+    
+  }
+
+  override def close(errorOrNull: Throwable): Unit = {
+    
+  }
+}
+
+processed.writeStream
+  .outputMode("update")  // output mode
+  .trigger(Trigger.ProcessingTime("1 minute"))  // trigger
+  .foreach(new HBaseForeachWriter()) // custom ForeachWriter
+  .start()
+  .awaitTermination()
 
