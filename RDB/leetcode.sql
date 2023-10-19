@@ -297,8 +297,61 @@ SELECT emp_id, SUM(DATEDIFF(second, [in], [out])) AS timespan
 FROM Temp2
 GROUP BY emp_id
 
+===
 
-														   
+-- career jumping
+WITH job_timeline AS
+(SELECT user_id, company, title, DATEDIFF(DATE(end_date), DATE(start_date)) AS days_spent_on_job
+ FROM user_experiences
+ WHERE user_id IN (SELECT user_id FROM user_experiences WHERE title = 'data science manager' AND is_current_role = True)
+ GROUP BY 1, 2, 3
+ ORDER BY 1, 2, 3, days_spent_on_job ASC
+)
+SELECT user_id, 
+  COUNT(DISTINCT company) num_switches,
+  SUM(days_spent_on_job) num_days_to_dsm
+FROM job_timeline
+GROUP BY 1
+
+
+===
+-- fraudulent upvotes
+WITH comment_voters AS
+(SELECT comment.id AS comment_id, comment.user_id AS commenter_id, comment_votes.user_id AS voter_id
+ FROM comments
+ INNER JOIN comment_votes ON comments.id = comment_votes.comment_id
+)
+voters_never_comment AS
+(SELECT comment_votes.user_id
+ FROM comment_votes
+ LEFT JOIN comments ON comment_votes.user_id = comments.user_id
+ WHERE comments.id IS NULL AND is_upvote = True
+)
+SELECT voter_id
+FROM comment_voters
+WHERE voter_id IN (SELECT user_id FROM voters_never_comment)
+GROUP BY voter_id
+HAVING COUNT(DISTINCT commenter_id) = 1 AND COUNTD(DISTINCT comment_id) > 3 -- voters who only upvoted one person but have >3 upvotes
+
+===
+
+WITH temp AS
+(
+ SELECT date, SUBSTRING(date, 1, 7) AS ym, daily_count 
+ FROM (
+   SELECT DATE(created_at) AS date, COUNT(id) AS daily_count
+   FROM users
+   GROUP BY date
+ )
+)
+SELECT date, SUM(daily_count) OVER(PARTITION BY ym ORDER BY date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS monthly_cumulative
+FROM temp
+
+
+
+
+
+
 
 
 
