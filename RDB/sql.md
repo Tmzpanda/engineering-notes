@@ -70,7 +70,22 @@ df = df.withColumn('rank', dense_rank().over(Window.partitionBy('dept_id').order
 
 
 ```
+# window function
+```sql
+-- cumulative reset
+WITH daily_user_count AS
+(
+ SELECT date, SUBSTRING(date, 1, 7) AS ym, daily_count 
+ FROM (
+   SELECT DATE(created_at) AS date, COUNT(id) AS daily_count
+   FROM users
+   GROUP BY date
+ )
+)
+SELECT date, SUM(daily_count) OVER(PARTITION BY ym ORDER BY date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS monthly_cumulative 
+FROM daily_user_count
 
+```
 
 
 
