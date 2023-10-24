@@ -334,7 +334,7 @@ GROUP BY voter_id
 HAVING COUNT(DISTINCT commenter_id) = 1 AND COUNTD(DISTINCT comment_id) > 3 -- voters who only upvoted one person but have >3 upvotes
 
 ===
-
+-- cumulative reset
 WITH temp AS
 (
  SELECT date, SUBSTRING(date, 1, 7) AS ym, daily_count 
