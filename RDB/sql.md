@@ -2,57 +2,57 @@
 ```sql
 -- DISTINCT
 SELECT DISTINCT id, name, department, salary
-FROM Employee
+FROM employee
 ```
 ```sql
 -- GROUP BY
 SELECT id, name, dept_id, salary
-FROM Employee
+FROM employee
 GROUP BY id, name, dept_id, salary
 HAVING COUNT(*) > 1
 ```
 ```sql
 -- ROW_NUMBER
-WITH Temp AS (
+WITH temp AS (
   SELECT
     id, name, dept_id, salary, ROW_NUMBER() OVER (PARTITION BY id, name, dept_id, salary ORDER BY salary DESC) AS row_num
-    FROM Employee
+    FROM employee
 )
 SELECT id, name, dept_id, salary
-FROM Temp
+FROM temp
 WHERE row_num > 1;
 ```
 
 # find nth highest salary
 ```sql
 SELECT name, salary
-FROM Employee
+FROM employee
 WHERE salary = (
   SELECT DISTINCT salary
-  FROM Employee
+  FROM employee
   ORDER BY salary DESC
   LIMIT n-1, 1 -- skip n-1 retrive 1
 );
 ```
 ```sql
 -- deduplicate
-SELECT name, salary FROM (
+SELECT name, salary
+FROM (
   SELECT name, salary, DENSE_RANK() OVER(ORDER BY salary DESC) AS rank 
-  FROM Employee
+  FROM employee
   )
 WHERE rank = n;
 ```
 ```sql
 -- find nth highest salary in each department
-WITH Temp AS
-(
-    SELECT *, DENSE_RANK() OVER(PARTITION BY dept_id ORDER BY salary DESC) AS rank
-    FROM Employee  
+WITH temp AS
+(SELECT *, DENSE_RANK() OVER(PARTITION BY dept_id ORDER BY salary DESC) AS rank
+ FROM employee  
 )
-SELECT T.name AS employee, D.name AS department, T.salary 
-FROM Temp T
-JOIN Department D ON Temp.dept_id = Department.id
-WHERE Temp.rank == n
+SELECT t.name AS employee, d.name AS department, t.salary 
+FROM temp t
+JOIN department d ON t.dept_id = d.id
+WHERE t.rank == n
 ```
 ```py
 # pandas
@@ -69,23 +69,20 @@ spark = SparkSession.builder.appName("app").getOrCreate()
 df = df.withColumn('rank', dense_rank().over(Window.partitionBy('dept_id').orderBy(col('salary').desc()))).filter(col('rank') == n)
 ```
 
-# window function
+# [Tesla SQL approaches](https://www.xiaohongshu.com/explore/64c1440e000000000103cd3d)
 ```sql
 -- cumulative reset
 WITH daily_user_count AS
-(
- SELECT date, SUBSTRING(date, 1, 7) AS ym, daily_count 
+(SELECT date, DATE_FORMAT(date, '%Y-%m') AS ym, daily_count 
  FROM (
    SELECT DATE(created_at) AS date, COUNT(id) AS daily_count
    FROM users
    GROUP BY date
  )
 )
-SELECT date, SUM(daily_count) OVER(PARTITION BY ym ORDER BY date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS monthly_cumulative 
+SELECT date, SUM(daily_count) OVER(PARTITION BY ym ORDER BY date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS monthly_cumulative -- window function
 FROM daily_user_count
 ```
-
-# [Tesla SQL approaches](https://www.xiaohongshu.com/explore/64c1440e000000000103cd3d)
 ```sql
 -- fraudulent upvotes
 WITH comment_voters AS
@@ -123,9 +120,36 @@ GROUP BY 1
 
 # ways of converting row values to new columns
 ```sql
+-- 1479. Sales by Day of the Week
+-- CASE WHEN
+WITH category_quantity AS
+(SELECT i.item_category AS category, DAYNAME(o.order_date) AS day_of_week, SUM(orders.quantity) AS quantity
+ FROM orders o
+ RIGHT JOIN items i ON o.item_id = i.item_id
+ GROUP BY i.item_category, DAYNAME(o.order_date)
+)
+SELECT category,
+MAX(CASE WHEN day_of_week = 'Monday' THEN quantity ELSE 0 END) AS Monday,																
+MAX(CASE WHEN day_of_week = 'Tuesday' THEN quantity ELSE 0 END) AS Tuesday,
+MAX(CASE WHEN day_of_week = 'Wednesday' THEN quantity ELSE 0 END) AS Wednesday,
+MAX(CASE WHEN day_of_week = 'Thursday' THEN quantity ELSE 0 END) AS Thursday,
+MAX(CASE WHEN day_of_week = 'Friday' THEN quantity ELSE 0 END) AS Friday,
+MAX(CASE WHEN day_of_week = 'Saturday' THEN quantity ELSE 0 END) AS Saturday,
+MAX(CASE WHEN day_of_week = 'Sunday' THEN quantity ELSE 0 END) AS Sunday
+FROM category_quantity
+GROUP BY category
+
+-- PIVOT
+WITH category_quantity AS
+(SELECT i.item_category AS category, DAYNAME(o.order_date) AS day_of_week, SUM(orders.quantity) AS quantity
+ FROM orders o
+ RIGHT JOIN items i ON o.item_id = i.item_id
+ GROUP BY i.item_category, DAYNAME(o.order_date)
+)
+SELECT category, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+FROM category_quantity PIVOT(MAX(Quantity) FOR day_of_week IN ([Monday], [Tuesday], [Wednesday], [Thursday], [Friday], [Saturday], [Sunday])) p;
 
 ```
-
 
 
 ```sql
