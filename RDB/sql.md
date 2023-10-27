@@ -176,6 +176,7 @@ INSERT INTO Event VALUES
 	(102, 'in', '2012/04/05 08:14:56'),
 	(102, 'out', '2012/04/05 08:44:56');
 
+-- PIVOT
 WITH temp1 AS
 (SELECT *, ROW_NUMBER() OVER(PARTITION BY emp_id, event Order BY time) AS row_id
  FROM event
@@ -187,7 +188,6 @@ temp2 AS
 SELECT emp_id, SUM(DATEDIFF(second, [in], [out])) AS timespan
 FROM temp2
 GROUP BY emp_id
-
 ```
 
 # reducing columns while keeping info
@@ -309,14 +309,50 @@ FROM department_salary
 JOIN company_salary
 ON department_salary.pay_month = company_salary.pay_month
 ```
+
+# DATETIME
+```sql
+-- DATETIME to DATE
+DATE(created_at) AS date
+
+-- DATE to day_of_week
+DAYNAME(o.order_date) 
+
+-- DATE to month
+DATE_FORMAT(date, '%Y-%m')
+EXTRACT(MONTH FROM date)
+
+-- DATE range
+WHERE transaction_date BETWEEN '2022-01-01' AND '2022-12-31'
+-- yesterday
+-- last 7 days
+
+-- DATEDIFF
+SUM(DATEDIFF(second, [in], [out]))
+
+
+
+
+
+```
+
 ```sql
 
 
 ```
+
+
 ```sql
 
 
 ```
+
+
+```py
+
+```
+
+
 ```sql
 
 
