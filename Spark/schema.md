@@ -60,6 +60,9 @@ kafka_stream = spark.readStream \
     .options(**kafka_params) \
     .load()
 
+```
+
+```py
 # schema contract 
 schema = StructType([
     StructField("frequency", IntegerType()),
@@ -78,11 +81,25 @@ schema = StructType([
     ])))
 ])
 
+parsed_data = kafka_stream.selectExpr("CAST(value AS STRING) as json") \
+    .select(from_json(col("json"), schema).alias("message")) 
+
 ```
 
 ```py
-parsed_data = kafka_stream.selectExpr("CAST(value AS STRING) as json") \
-    .select(from_json(col("json"), schema).alias("message")) 
+# schema enforcement
+class Record:
+    def __init__(self, frequency, timestamp, notes, data_type, instrument_name, instrument_type, is_setpoint, number_value, is_baddata, original_timestamp):
+        self.frequency = frequency
+        self.timestamp = timestamp
+        self.notes = notes
+        self.data_type = data_type
+        self.instrument_name = instrument_name
+        self.instrument_type = instrument_type
+        self.is_setpoint = is_setpoint
+        self.number_value = number_value
+        self.is_baddata = is_baddata
+        self.original_timestamp = original_timestamp
 
 flattened_data = parsed_data.select(
     col("message.frequency"),
@@ -103,25 +120,7 @@ flattened_data = parsed_data.select(
     col("data.number_value").alias("number_value"),
     col("data.is_baddata").alias("is_baddata"),
     col("data.original_timestamp").alias("original_timestamp")
-)
-```
-
-```py
-# schema enforcement
-class Record:
-    def __init__(self, frequency, timestamp, notes, data_type, instrument_name, instrument_type, is_setpoint, number_value, is_baddata, original_timestamp):
-        self.frequency = frequency
-        self.timestamp = timestamp
-        self.notes = notes
-        self.data_type = data_type
-        self.instrument_name = instrument_name
-        self.instrument_type = instrument_type
-        self.is_setpoint = is_setpoint
-        self.number_value = number_value
-        self.is_baddata = is_baddata
-        self.original_timestamp = original_timestamp
-
-dataset = flattened_data.as[Record]
+).as[Record]
 
 ```
 
