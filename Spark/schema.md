@@ -60,6 +60,7 @@ kafka_stream = spark.readStream \
     .options(**kafka_params) \
     .load()
 
+# schema contract 
 schema = StructType([
     StructField("frequency", IntegerType()),
     StructField("data", ArrayType(StructType([
@@ -106,6 +107,7 @@ flattened_data = parsed_data.select(
 ```
 
 ```py
+# schema enforcement
 class Record:
     def __init__(self, frequency, timestamp, notes, data_type, instrument_name, instrument_type, is_setpoint, number_value, is_baddata, original_timestamp):
         self.frequency = frequency
