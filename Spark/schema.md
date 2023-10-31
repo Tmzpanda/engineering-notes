@@ -1,3 +1,4 @@
+# sample record
 ```json
 {
     "frequency": 10,
