@@ -324,7 +324,7 @@ EXTRACT(MONTH FROM date)
 
 -- DATE range
 WHERE transaction_date BETWEEN '2022-01-01' AND '2022-12-31'
--- yesterday
+
 -- last 7 days
 WHERE dt >= DATE_SUB(CURRENT_DATE, INTERVAL 1 WEEK)
 
@@ -336,30 +336,6 @@ SUM(DATEDIFF(second, [in], [out]))
 # columns operation
 ```sql
 -- CONCAT
--- COALESCE
--- returns the first non-null expression from left to right
+-- COALESCE 
 
 ```
-
-
-```sql
-
-
-```
-
-
-```py
-
-```
-
-
-```sql
-
-
-```
-```sql
-
-
-```
-
-
