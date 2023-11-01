@@ -1,4 +1,5 @@
-"""
+# VFR
+```
 The National Weather Service has gone down, and pilots don't know if they can legally fly their airplanes.
 Due to the system outages pilots will only be allowed to fly using Visual Flight Rules (VFR.)
 
@@ -16,8 +17,8 @@ An example record follows, though the reported columns may vary greatly due to d
 
 YOUR TASK:
 Search for and return a count of as many airports that you can prove are using VFR.
-
-"""
+```
+```py
 import re
 vfr_airports_count = 0
 
@@ -57,8 +58,8 @@ def is_vfr_compliant(visibility, cloud_ceiling):
             return True
         
     return False
-
-
+```
+```py
 # pandas
 with open('/home/coderpad/data/metars.csv', 'r') as csvfile:
     csv_reader = csv.reader(csvfile)  # iterator
@@ -73,10 +74,61 @@ df['vfr_compliant'] = df.apply(lambda row: is_vfr_compliant(row['visibility'], r
 vfr_airports_count = df['vfr_compliant'].sum()
 
 print("Number of VFR-compliant airports:", vfr_airports_count)
-
-# findall
+```
+# log file 
+```
+192.168.1.1 - - [01/Nov/2023:10:30:45 +0000] "GET /home HTTP/1.1" 200 1234
+192.168.1.2 - - [01/Nov/2023:10:31:15 +0000] "GET /product?id=123 HTTP/1.1" 404 567
+192.168.1.3 - - [01/Nov/2023:10:32:30 +0000] "POST /login HTTP/1.1" 200 890
+```
+```py
+import pandas as pd
 import re
+
+columns = ["ip_address", "timestamp", "request_method", "http_status", "bytes_sent"]
+df = pd.DataFrame(columns=columns)
+
+log_pattern = r'(\S+) - - \[(.*?)\] "(.*?)" (\d+) (\d+)'
+with open("sample_log.txt", "r") as file:
+    for line in file:
+        match = re.match(log_pattern, line)
+        if match:
+            data = list(match.groups())
+            df = df.append(dict(zip(columns, data)), ignore_index=True)
+
+df["timestamp"] = pd.to_datetime(df["timestamp"], format="%d/%b/%Y:%H:%M:%S %z")
+print(df)
+
+```
+
+# regex
+```py
+import re
+visibility_match = re.search(r'(\b\d{4})\b|\b\d+SM\b', row)    
+visibility = visibility_match.group()
+
+```
+
+```py
+import re
+cloud_ceiling_match = re.match(r'(\w+)(\d+)?', cloud_ceiling)
+cloud_cover = cloud_ceiling_match.group(1)    
+cloud_height = cloud_ceiling_match.group(2)
+
+```
+
+```py
+import re
+log_pattern = r'(\S+) - - \[(.*?)\] "(.*?)" (\d+) (\d+)'
+match = re.match(log_pattern, line)
+match.groups()
+
+```
+
+```py
 text = "Name: John, Age: 25, Country: USA\nName: Jane, Age: 30, Country: Canada"
 pattern = r"Name: (\w+), Age: (\d+), Country: (\w+)"
 records = re.findall(pattern, text)
+
+```
 
