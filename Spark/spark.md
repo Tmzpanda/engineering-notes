@@ -9,6 +9,7 @@ data = [["James","Smith",30,"M"],
        ] 
 columns = ['First Name','Last Name','Age','Gender']
 df = spark.createDataFrame(data=data, schema=columns)
+
 ```
 
 ``` scala
@@ -20,7 +21,7 @@ val df = spark.createDataFrame(data).toDF("name", "age")
 import spark.implicits._
 val ds = df.as[Record]  
 
-# toDF
+// toDF
 val df = spark.createDataFrame(rdd).toDF("department", "eid", "salary")
 
 // createDataset
