@@ -19,8 +19,7 @@ stream
   .withWatermark("timestamp", "10 minutes")  
   .groupBy(
     window(timeColumn=$"timestamp", windowDuration="5 minutes", slideDuration="1 minutes"),  // window of 10mins, triggered every 5mins
-    $"zip"
-  )
+    $"zip")
   .count
 
 ```
@@ -35,7 +34,6 @@ processed.writeStream
   .awaitTermination()
 
 ```
-
 
 ```scala
 // custom ForeachWriter
