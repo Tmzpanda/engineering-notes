@@ -131,7 +131,7 @@ WITH category_quantity AS
  GROUP BY i.item_category, DAYNAME(o.order_date)
 )
 SELECT category, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
-FROM category_quantity PIVOT(MAX(Quantity) FOR day_of_week IN ([Monday], [Tuesday], [Wednesday], [Thursday], [Friday], [Saturday], [Sunday])) p;
+FROM category_quantity PIVOT(MAX(quantity) FOR day_of_week IN ([Monday], [Tuesday], [Wednesday], [Thursday], [Friday], [Saturday], [Sunday])) p;
 ```
 
 ```sql
@@ -326,18 +326,18 @@ EXTRACT(MONTH FROM date)
 WHERE transaction_date BETWEEN '2022-01-01' AND '2022-12-31'
 -- yesterday
 -- last 7 days
+WHERE dt >= DATE_SUB(CURRENT_DATE, INTERVAL 1 WEEK)
 
 -- DATEDIFF
 SUM(DATEDIFF(second, [in], [out]))
 
-
-
-
-
 ```
 
+# columns operation
 ```sql
-
+-- CONCAT
+-- COALESCE
+-- returns the first non-null expression from left to right
 
 ```
 
