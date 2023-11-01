@@ -59,7 +59,7 @@ kafka_params = {
 kafka_stream = spark.readStream \
     .format("kafka") \
     .options(**kafka_params) \
-    .load()
+    .load()    # #of consumer instances = #of topic partitions by default
 
 ```
 
