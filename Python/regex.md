@@ -31,7 +31,7 @@ with open('/home/coderpad/data/metars.csv', 'r') as csvfile:
         cloud_ceiling_match = re.search(r'\b(CLR|FEW|SCT|BKN|OVC)(\d+)?\b', row)  
         
         if visibility_match and cloud_ceiling_match:
-            visibility = visibility_match.group()    # Match object
+            visibility = visibility_match.group()    
             cloud_ceiling = cloud_ceiling_match.group()
             
             if is_vfr_compliant(visibility, cloud_ceiling):
