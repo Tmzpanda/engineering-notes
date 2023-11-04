@@ -113,7 +113,7 @@ WITH category_quantity AS
  GROUP BY i.item_category, DAYNAME(o.order_date)
 )
 SELECT category,
-MAX(CASE WHEN day_of_week = 'Monday' THEN quantity ELSE 0 END) AS Monday,																
+MAX(CASE WHEN day_of_week = 'Monday' THEN quantity ELSE 0 END) AS Monday,							
 MAX(CASE WHEN day_of_week = 'Tuesday' THEN quantity ELSE 0 END) AS Tuesday,
 MAX(CASE WHEN day_of_week = 'Wednesday' THEN quantity ELSE 0 END) AS Wednesday,
 MAX(CASE WHEN day_of_week = 'Thursday' THEN quantity ELSE 0 END) AS Thursday,
@@ -168,13 +168,30 @@ CREATE TABLE event (
 	event VARCHAR(25), 
 	time DATETIME
 	); 
-INSERT INTO Event VALUES 
+INSERT INTO event VALUES 
 	(101, 'in', '2012/04/05 08:14:56'),
 	(101, 'out', '2012/04/05 08:24:55'),
 	(101, 'in', '2012/04/05 08:34:56'),
 	(101, 'out', '2012/04/05 08:44:56'),
 	(102, 'in', '2012/04/05 08:14:56'),
 	(102, 'out', '2012/04/05 08:44:56');
+
+-- CASE WHEN
+WITH temp1 AS
+(SELECT *, ROW_NUMBER() OVER(PARTITION BY emp_id, event Order BY time) AS row_id
+ FROM event
+),
+WITH temp2 AS
+(
+SELECT emp_id, in, out
+MAX(CASE WHEN event = 'in' THEN time END) AS in,
+MAX(ASE WHEN event = 'out' THEN time END) AS out
+FROM temp1
+GROUP BY emp_id, row_id
+)
+SELECT emp_id, SUM(DATEDIFF(second, [in], [out])) AS timespan
+FROM temp2
+GROUP BY emp_id
 
 -- PIVOT
 WITH temp1 AS
@@ -215,20 +232,6 @@ LEFT JOIN user_transaction ON users.user_id = user_transaction.user_id
 
 # HAVING 
 ```sql
--- 1398. Customers Who Bought Products A and B but Not C
-WITH temp AS
-(
-    SELECT customer_id
-    From orders
-    GROUP BY customer_id
-    HAVING SUM(product_name = 'A') > 0 AND SUM(product_name = 'B') > 0 AND SUM(product_name = 'C') = 0
-)
-SELECT customer_id, customer_name
-FROM Customers
-WHERE customer_id in (SELECT customer_id FROM temp);
-```
-
-```sql
 -- fraudulent upvotes
 -- (https://www.xiaohongshu.com/explore/64c1440e000000000103cd3d)
 WITH comment_voters AS
@@ -247,6 +250,32 @@ FROM comment_voters
 WHERE voter_id IN (SELECT user_id FROM voters_never_comment)
 GROUP BY voter_id
 HAVING COUNT(DISTINCT commenter_id) = 1 AND COUNT(DISTINCT comment_id) > 3 -- voters who only upvoted one person but have >3 upvotes
+```
+
+```sql
+-- 1398. Customers Who Bought Products A and B but Not C
+WITH temp AS
+(
+    SELECT customer_id
+    From orders
+    GROUP BY customer_id
+    HAVING SUM(product_name = 'A') > 0 AND SUM(product_name = 'B') > 0 AND SUM(product_name = 'C') = 0
+)
+SELECT customer_id, customer_name
+FROM Customers
+WHERE customer_id in (SELECT customer_id FROM temp);
+```
+
+```sql
+-- Customers Who Bought All Products
+-- (https://www.xiaohongshu.com/explore/653a87e6000000001e031c61)
+WITH temp AS
+(
+    SELECT customer_id
+    From orders
+    GROUP BY customer_id
+    HAVING COUNT(DISTINCT product_id) = (SELECT COUNT(*) FROM products)
+)
 ```
 
 # CASE WHEN  
