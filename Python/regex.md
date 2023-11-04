@@ -48,7 +48,7 @@ def is_vfr_compliant(visibility, cloud_ceiling):
         if visibility_km >= 8000:
             return True
         
-    cloud_ceiling_match = re.match(r'(\w+)(\d+)?', cloud_ceiling)    # match
+    cloud_ceiling_match = re.match(r'([A-Za-z]+)(\d+)?', cloud_ceiling)    # match
     cloud_cover = cloud_ceiling_match.group(1)    
     cloud_height = cloud_ceiling_match.group(2)
     if cloud_cover in ['CLR', 'FEW', 'SCT']:
@@ -59,22 +59,7 @@ def is_vfr_compliant(visibility, cloud_ceiling):
         
     return False
 ```
-```py
-# pandas
-with open('/home/coderpad/data/metars.csv', 'r') as csvfile:
-    csv_reader = csv.reader(csvfile)  # iterator
-    for row in csv_reader:
-        data.append([row])
-        
-df = pd.DataFrame(data, columns=['raw'])
-df['visibility'] = df['raw'].str.extract(r'(\d{4})|\d+SM\b')
-df['cloud_ceiling'] = df['raw'].str.extract(r'\b(CLR|FEW|SCT|BKN|OVC)(\d+)?\b')
-df['vfr_compliant'] = df.apply(lambda row: is_vfr_compliant(row['visibility'], row['cloud_ceiling']), axis=1)        
 
-vfr_airports_count = df['vfr_compliant'].sum()
-
-print("Number of VFR-compliant airports:", vfr_airports_count)
-```
 # log file 
 ```
 192.168.1.1 - - [01/Nov/2023:10:30:45 +0000] "GET /home HTTP/1.1" 200 1234
@@ -104,31 +89,33 @@ print(df)
 # regex
 ```py
 import re
-visibility_match = re.search(r'(\b\d{4})\b|\b\d+SM\b', row)    
-visibility = visibility_match.group()
+# match
+pattern = r'\d+'
+text = "123abc456"
+match_obj = re.match(pattern, text)
+print(match_obj.group())
+
+# search
+pattern = r'\d+'
+text = "abc123def456"
+match_obj = re.search(pattern, text)
+print(match_obj.group())
+
+# findall
+pattern = r'\d+'
+text = "abc123def456"
+matches = re.findall(pattern, text)
+print(matches)
 
 ```
 
 ```py
-import re
-cloud_ceiling_match = re.match(r'(\w+)(\d+)?', cloud_ceiling)
-cloud_cover = cloud_ceiling_match.group(1)    
-cloud_height = cloud_ceiling_match.group(2)
+# patterns
+r'(\b\d{4})\b|\b\d+SM\b'    
+r'\b(CLR|FEW|SCT|BKN|OVC)(\d+)?\b'    # `?` makes the preceding group optional
+r'([A-Za-z]+)(\d+)?'
+r'(\S+) - - \[(.*?)\] "(.*?)" (\d+) (\d+)'    # `\S` matches any non-whitespace character `(.*?)` matches any sequence of characters
 
 ```
 
-```py
-import re
-log_pattern = r'(\S+) - - \[(.*?)\] "(.*?)" (\d+) (\d+)'
-match = re.match(log_pattern, line)
-match.groups()
-
-```
-
-```py
-text = "Name: John, Age: 25, Country: USA\nName: Jane, Age: 30, Country: Canada"
-pattern = r"Name: (\w+), Age: (\d+), Country: (\w+)"
-records = re.findall(pattern, text)
-
-```
 
