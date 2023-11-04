@@ -76,7 +76,7 @@ df = pd.DataFrame(columns=columns)
 log_pattern = r'(\S+) - - \[(.*?)\] "(.*?)" (\d+) (\d+)'
 with open("sample_log.txt", "r") as file:
     for line in file:
-        match = re.match(log_pattern, line)
+        match = re.match(log_pattern, line)    # match
         if match:
             data = list(match.groups())
             df = df.append(dict(zip(columns, data)), ignore_index=True)
