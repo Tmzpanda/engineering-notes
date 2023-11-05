@@ -50,11 +50,9 @@ from collections import defaultdict
 
 # Graph
 
-```
+```py
 # build
-
 graph = defaultdict(list)
-
 for seq in sequences:
     for f, t in zip(seq, seq[1:]):  
         graph[f].append(t)
