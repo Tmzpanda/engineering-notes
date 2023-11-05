@@ -1,5 +1,5 @@
 
-# array
+# Array
 
 
 ```py
@@ -29,7 +29,7 @@ patterns = set(combinations(userToWebs[user], 3))
 
 
 
-# dictionary
+# Dictionary
 ```py
 # Counter
 from collections import Counter
@@ -44,5 +44,20 @@ def find_max_unique(numbers):
 ```py
 # defaultdict
 from collections import defaultdict
+
+```
+
+
+# Graph
+
+```
+# build
+
+graph = defaultdict(list)
+
+for seq in sequences:
+    for f, t in zip(seq, seq[1:]):  
+        graph[f].append(t)
+
 
 ```
