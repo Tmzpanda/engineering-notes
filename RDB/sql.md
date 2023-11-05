@@ -84,6 +84,20 @@ WITH daily_user_count AS
 SELECT date, SUM(daily_count) OVER(PARTITION BY ym ORDER BY date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS monthly_cumulative
 FROM daily_user_count
 ```
+
+```sql
+-- avg time between logout and next login
+-- (https://www.xiaohongshu.com/explore/653a3e49000000002201f251)
+WITH temp AS
+(SELECT user_id, start_time, end_time,
+    LEAD(start_time) OVER(PARTITION BY user_id ORDER BY start_time) AS next_start_time -- retrieve values from subsequent rows without the need for self-joins
+ FROM app_login
+)
+SELECT user_id, AVG(TIMESTAMPDIFF(MINUTE, end_time, next_start_time)) AS avg_time
+WHERE next_start_time IS NOT NULL
+GROUP BY user_id
+```
+
 # WITH approach
 ```sql
 -- career jumping
@@ -113,7 +127,7 @@ WITH category_quantity AS
  GROUP BY i.item_category, DAYNAME(o.order_date)
 )
 SELECT category,
-MAX(CASE WHEN day_of_week = 'Monday' THEN quantity ELSE 0 END) AS Monday,							
+MAX(CASE WHEN day_of_week = 'Monday' THEN quantity ELSE 0 END) AS Monday,
 MAX(CASE WHEN day_of_week = 'Tuesday' THEN quantity ELSE 0 END) AS Tuesday,
 MAX(CASE WHEN day_of_week = 'Wednesday' THEN quantity ELSE 0 END) AS Wednesday,
 MAX(CASE WHEN day_of_week = 'Thursday' THEN quantity ELSE 0 END) AS Thursday,
