@@ -86,6 +86,17 @@ parsed_data = kafka_stream.selectExpr("CAST(value AS STRING) as json") \
     .select(from_json(col("json"), schema).alias("message")) 
 
 ```
+```py
+# retrive schema contract from Schema Registry
+from confluent_kafka.avro import CachedSchemaRegistryClient
+
+schema_registry_client = CachedSchemaRegistryClient({"url": "http://your-schema-registry-url:8081")
+schema = schema_registry_client.get_latest_schema("your_kafka_topic").schema
+
+parsed_data = kafka_stream.selectExpr("CAST(value AS STRING) as json") \
+    .select(from_json(col("json"), schema).alias("message")) 
+
+```
 
 ```py
 # schema enforcement
