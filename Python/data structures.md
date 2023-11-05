@@ -6,6 +6,8 @@
 # zip
 for user, web, time in zip(username, website, timestamp):
     activities.append((user, web, time))
+
+# sort
 activities.sort(key=lambda x:x[2])
 
 ```
