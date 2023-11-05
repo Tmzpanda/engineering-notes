@@ -1,6 +1,8 @@
 
 # Array
+```py
 
+```
 
 ```py
 # zip
@@ -21,7 +23,14 @@ patterns = set(combinations(userToWebs[user], 3))
 ```py
 
 ```
+
 ```py
+# stack
+stack = []
+for digit in num:
+    while stack and digit < stack[-1]:    # non-decreasing
+        stack.pop()
+    stack.append(digit)
 
 ```
 
@@ -34,11 +43,8 @@ patterns = set(combinations(userToWebs[user], 3))
 # Counter
 from collections import Counter
 
-def find_max_unique(numbers):
-    num_counts = Counter(numbers)
-    unique_numbers = [num for num, count in counts.items() if count == 1]
-
-    return max(unique_numbers)
+num_counts = Counter(numbers)
+unique_numbers = [num for num, count in counts.items() if count == 1]
 
 ```
 ```py
