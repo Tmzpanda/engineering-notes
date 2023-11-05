@@ -34,6 +34,18 @@ for digit in num:
 
 ```
 
+```py
+# queue
+from collections import deque
+
+```
+
+```py
+# heap
+from heapq import heappush, heappop
+
+```
+
 
 
 
@@ -44,7 +56,7 @@ for digit in num:
 from collections import Counter
 
 num_counts = Counter(numbers)
-unique_numbers = [num for num, count in counts.items() if count == 1]
+unique_numbers = [num for num, count in num_counts.items() if count == 1]
 
 ```
 ```py
@@ -58,10 +70,15 @@ from collections import defaultdict
 
 ```py
 # build
+from collections import defaultdict
+
 graph = defaultdict(list)
-for seq in sequences:
-    for f, t in zip(seq, seq[1:]):  
-        graph[f].append(t)
+for t, f in prerequisites:
+    graph[f].append(t)  
+
+```
+
+```py
 
 
 ```
