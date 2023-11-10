@@ -63,20 +63,18 @@ unique_numbers = [num for num, count in num_counts.items() if count == 1]
 # defaultdict
 from collections import defaultdict
 
-```
-
-
-# Graph
-
-```py
-# build
-from collections import defaultdict
-
 graph = defaultdict(list)
 for t, f in prerequisites:
     graph[f].append(t)  
 
 ```
+
+```py
+# OrderedDict
+
+```
+
+
 
 ```py
 
