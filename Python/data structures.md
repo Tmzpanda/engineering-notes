@@ -47,7 +47,7 @@ from heapq import heappush, heappop
 ```
 
 # Set
-```
+```py
 user_with_invites = reduce(set.union, invites.values(), set())
 user_without_invites = set(invites.keys()) - user_with_invites
 
