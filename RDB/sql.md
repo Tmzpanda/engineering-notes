@@ -238,7 +238,7 @@ user_transaction AS
  GROUP BY user_id
 )
 SELECT users.user_id, users.user_name, user_transaction.transaction_sum,
-  CASE WHEN users.credit + IFNULL(user_transaction.transaction_sum, 0) > 0 THEN 'No' ELSE 'Yes' END AS 'credit_limit_breached'
+  CASE WHEN users.credit + IFNULL(user_transaction.transaction_sum, 0) > 0 THEN 'No' ELSE 'Yes' END AS credit_limit_breached
 FROM users 
 LEFT JOIN user_transaction ON users.user_id = user_transaction.user_id	
 
